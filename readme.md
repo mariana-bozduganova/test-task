@@ -1,0 +1,1 @@
+A simple email notification system built with Laravel 5.3 informing users about a price change of a product with their gender/size combination
