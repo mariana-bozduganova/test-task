@@ -72,7 +72,7 @@
                         <div class="panel panel-default">
                             <div class="panel-heading">Subscription From</div>
                             <div class="panel-body">
-                                <form class="form-horizontal" role="form" method="POST" action="{{ url('subscriptions') }}">
+                                <form class="form-horizontal" id="subscription-form" role="form" method="POST" action="{{ url('subscriptions') }}">
 
                                     {{ csrf_field() }}
 
