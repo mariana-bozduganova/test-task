@@ -4,16 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreSubscription;
 use App\ProductVariationsCollection;
+use App\Services\SubscriptionsService;
 use App\SubscriptionCriteria;
 use App\Subscription;
 use App\Price;
 
 class SubscriptionsController extends Controller
 {
+    protected $service;
     protected $productVariations;
 
-    public function __construct(ProductVariationsCollection $productVariations)
+    public function __construct(ProductVariationsCollection $productVariations, SubscriptionsService $service)
     {
+        $this->service = $service;
         $this->productVariations = $productVariations;
     }
 
@@ -30,7 +33,7 @@ class SubscriptionsController extends Controller
     public function store(StoreSubscription $request)
     {
         try {
-            Subscription::withCriteria(new SubscriptionCriteria($request->get('gender'), $request->get('size')))->make($request->get('email'));
+            $this->service->addSubscription($request->all());
         }
         catch(\Exception $e) {
             session()->flash('error', $e->getMessage());

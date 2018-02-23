@@ -19,6 +19,16 @@ class SubscriptionCriteria implements Arrayable {
         $this->size = $size;
     }
 
+    public function gender()
+    {
+        return $this->gender;
+    }
+
+    public function size()
+    {
+        return $this->size;
+    }
+
     public function toArray()
     {
         return [

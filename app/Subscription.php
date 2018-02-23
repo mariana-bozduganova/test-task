@@ -7,31 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class Subscription extends Model
 {
     /**
-     * The attributes that are mass assignable
+     * The attributes that aren't mass assignable.
      *
      * @var array
      */
-    protected $fillable = ['gender', 'size', 'status', 'subscriber_id'];
+    protected $guarded = [];
 
-    /**
-     * The subscription criteria with which the subscription is instantiated
-     *
-     * @var
-     */
-    protected static $subscriptionCriteria;
-
-    /**
-     * Instantiates a new subscription instance with criteria information filled in
-     *
-     * @param SubscriptionCriteria $criteria
-     * @return static
-     */
-    public static function withCriteria(SubscriptionCriteria $criteria)
-    {
-        self::$subscriptionCriteria = $criteria;
-
-        return new static($criteria->toArray());
-    }
+    public $incrementing = false;
 
     /**
      * Creates a new subscription
@@ -41,23 +23,22 @@ class Subscription extends Model
      * @return $this
      * @throws \Exception
      */
-    public function make($email, array $options = [])
+    public static function make(string $id, SubscriptionCriteria $criteria)
     {
-        $subscriber = Subscriber::register($email);
+        $subscription = new self();
 
-        if ($subscriber->alreadySubscribedWith(self::$subscriptionCriteria)) {
-            throw new \Exception('A user with this email already subscribed for the given criteria.');
-        }
+        $subscription->id = $id;
 
-        $this->setDefaultStatus();
+        $subscription->fill($criteria->toArray());
 
-        $this->fill($this->filterOptions($options));
+        $subscription->setDefaultStatus();
 
-        $this->owner()->associate($subscriber);
+        return $subscription;
+    }
 
-        $this->save();
-
-        return $this;
+    public function criteria()
+    {
+        return new SubscriptionCriteria($this->gender, $this->size);
     }
 
     /**
@@ -75,17 +56,6 @@ class Subscription extends Model
     protected function setDefaultStatus()
     {
         $this->status = 'active';
-    }
-
-    /**
-     * Exclude the subscription criteria parameters from the options array
-     *
-     * @param $options
-     * @return array
-     */
-    protected function filterOptions($options)
-    {
-        return array_diff_key($options, self::$subscriptionCriteria->toArray());
     }
 
     /**
