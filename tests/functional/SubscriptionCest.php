@@ -25,5 +25,8 @@ class SubscriptionCest
             'size' => '38',
             'status' => 'active'
         ]);
+        $I->seeRecord('subscribers', [
+            'email' => 'testing@gmail.com'
+        ]);
     }
 }
